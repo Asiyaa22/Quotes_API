@@ -1,11 +1,18 @@
-import express from "express";
+import express, { request } from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 const app = express();
-const port = 3000;
+const port = 5000;
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cors());
+
+app.get("/", (req, res) => {
+    res.json(quotes);
+})
 
 app.get("/random", (req, res) => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -41,7 +48,7 @@ app.get("/quotes/:id", (req, res) => {
 //Filter Route
 // app.get("/filter", (req, res) => {
 //     const quoteType = req.query.quoteType;
-//     //retrieve the quoteType via url
+    //retrieve the quoteType via url
 //     const findType = quotes.find( q => q.type == quoteType);
 
 //     if(findType){
@@ -57,7 +64,7 @@ app.get("/filter", (req, res) => {
         return
         res.status(404).json({ error: `not found ${type}`});
     }
-    const filteredQuotes = quotes.filter(j => j.quoteType.toLowerCase() === type.toLowerCase());
+    const filteredQuotes = quotes.filter(q => q.quoteType.toLowerCase() === type.toLowerCase());
 
     if (filteredQuotes.length > 0) {
       res.json(filteredQuotes);
@@ -66,39 +73,106 @@ app.get("/filter", (req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log(`server is running on port ${port}`);
+//post Method
+//Adding new quote
+app.post("/quotes", (req, res) => {
+    console.log("form data received:", req.body);
+    const { quoteContent, quoteType } = req.body;
+    
+    if( !quoteContent || !quoteType ){
+        return res.status(404).json({ error: 'qouteContent and quoteType are required'});
+    }
+
+    const newQuote = {
+        id: quotes.length + 1,  // Set ID based on current length
+        quoteContent: quoteContent, // Assign content from form
+        quoteType: quoteType, // Assign type from form
+    };
+
+    quotes.push(newQuote);
+    console.log("Quote Added:", newQuote);
+    res.status(201).json(newQuote);
+});
+
+app.put("/quotes/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    //ONE method
+    const updatedQuote = {
+        id: id,
+        quoteContent: req.body.quoteContent,
+        quoteType: req.body.quoteType,
+    };
+    //another Method
+    // const { qouteContent, quoteType } = req.body;
+    // const updateQuote  = {
+    //     id: id,
+    //     qouteContent,
+    //     quoteType,
+    // }
+    const searchIndex = quotes.findIndex((q) => q.id === id);
+    quotes[searchIndex] = updatedQuote;
+    res.json(updatedQuote);
+});
+
+app.delete("/quotes/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const searchIndex = quotes.findIndex((q) => q.id === id);
+    if( searchIndex > -1 ){
+        quotes.splice(searchIndex, 1);
+        res.status(201);
+    }else{
+        res.status(404).json({error:`quote with Id ${id} is not found`});
+    }
+});
+
+//deleting EveryThing
+
+const masterKey = "IA1M-H1S-H$-MINE";
+app.delete("/quotes", (req, res) => {
+    const userKey = req.query.key;
+    if( userKey === masterKey ){
+        quotes = [];
+        res.status(200);
+    }else{
+        res.status(404).json({error:`Everything is Deleted....The user has successfully moved on🌻`});
+    }
+});
+
+
+
+app.listen(5000, () => {
+    console.log(`API is running on port ${port}`);
 });
 
 const quotes = [
     {
         id: 1,
-        qouteContent: "Money is Motivation💴", 
+        quoteContent: "Money is Motivation💴", 
         quoteType: "motivation",
     },
 {
     id: 2,
-    qouteContent: "It will be worth it", 
+    quoteContent: "It will be worth it", 
     quoteType: "endgame",
 },
 {
     id: 3,
-    qouteContent: "The tougher it gets the closer it is to relief🍀", 
+    quoteContent: "The tougher it gets the closer it is to relief🍀", 
     quoteType: "endgame",
 },
 {
     id: 4,
-    qouteContent: "Hardwork paysoff", 
+    quoteContent: "Hardwork paysoff", 
     quoteType: "motivation",
 },
 {
     id: 5,
-    qouteContent: "You have to.....Do You Understand?", 
+    quoteContent: "You have to.....Do You Understand?", 
     quoteType: "tate",
 },
 {
     id: 6,
-    qouteContent: "If it would be easy, everyone would have done that!!", 
+    quoteContent: "If it would be easy, everyone would have done that!!", 
     quoteType: "tate",
 },
 ]

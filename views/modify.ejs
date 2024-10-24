@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random & New</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <% if(quotes){ %>
+    <div class="container">
+        <p><%= quotes.quoteContent %></p>
+    </div>
+    <% }else{ %>
+        <div class="new">
+        <form id="quoteForm" method="post" action="/quotes">
+           <textarea name="quoteContent" id="newQuote" rows="10" placeholder="Enter your quote"></textarea>
+           <input type="text" name="quoteType" id="newType" placeholder="Enter Type">
+           <button type="submit">Create</button>
+        </form>
+        </div>
+    <% } %>
+    <!-- <script>
+        document.getElementById('quoteForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent default form submission
+    
+            const quoteContent = document.getElementById('newQuote').value;
+            const quoteType = document.getElementById('newType').value;
+    
+            try {
+                const response = await fetch('/quotes', {
+                    method: 'POST', -->
+    <!-- //                 headers: {
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify({ quoteContent, quoteType })
+    //             });
+    
+    //             if (response.ok) {
+    //                 // If success, redirect to home or handle success
+    //                 window.location.href = '/';
+    //             } else {
+    //                 const errorData = await response.json();
+    //                 console.error('Error:', errorData);
+    //             }
+    //         } catch (error) {
+    //             console.error('Error:', error);
+    //         }
+    //     });
+    // </script> -->
+</body>
+</html>
